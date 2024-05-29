@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ScreenSound.API.Requests;
+using ScreenSound.API.Responses;
 using ScreenSound.Banco;
 using ScreenSound.Modelos.Modelos;
 
@@ -23,10 +25,12 @@ public static class MusicasExtensions
 			return Results.Ok(musica);
 		});
 
-		app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromBody] Musica musica) => {
+		app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromBody] MusicaRequest musicaRequest) => {
+			var musica = new Musica(musicaRequest.nome);
 			dal.Adicionar(musica);
 			return Results.Ok();
 		});
+
 		app.MapDelete("/Musicas/{id}", ([FromServices] DAL<Musica> dal, int id) =>
 		{
 			var musica = dal.RecuperarPor(m => m.Id == id);
@@ -38,19 +42,30 @@ public static class MusicasExtensions
 			return Results.NoContent();
 		});
 
-		app.MapPut("/Musicas", ([FromServicesAttribute] DAL<Musica> dal, [FromBody] Musica musica) =>
+		app.MapPut("/Musicas", ([FromServicesAttribute] DAL<Musica> dal, [FromBody] MusicaRequestEdit musicaRequest) =>
 		{
-			var musicaAtualizar = dal.RecuperarPor(m => m.Id == musica.Id);
+			var musicaAtualizar = dal.RecuperarPor(m => m.Id == musicaRequest.Id);
 			if (musicaAtualizar is null)
 			{
 				return Results.NotFound();
 			}
-			musicaAtualizar.Nome = musica.Nome;
-			musicaAtualizar.Artista = musica.Artista;
-			musicaAtualizar.AnoLancamento = musica.AnoLancamento;
+			musicaAtualizar.Nome = musicaRequest.nome;
+			//musicaAtualizar.Artista = musicaRequest.ArtistaId;
+			musicaAtualizar.AnoLancamento = musicaRequest.anoLancamento;
 
 			dal.Atualizar(musicaAtualizar);
 			return Results.Ok();
 		});
 	}
+	private static ICollection<MusicaResponse> EntityListToResponseList(IEnumerable<Musica> musicaList)
+	{
+		return musicaList.Select(a => EntityToResponse(a)).ToList();
+	}
+
+	private static MusicaResponse EntityToResponse(Musica musica)
+	{
+		return new MusicaResponse(musica.Id, musica.Nome!, musica.Artista!.Id, musica.Artista.Nome);
+	}
+
+
 }
