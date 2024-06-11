@@ -25,8 +25,15 @@ public static class MusicasExtensions
 			return Results.Ok(musica);
 		});
 
-		app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromBody] MusicaRequest musicaRequest) => {
-			var musica = new Musica(musicaRequest.nome);
+		app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromServices] DAL<Genero> dalGenero,[FromBody] MusicaRequest musicaRequest) => {
+			var musica = new Musica(musicaRequest.nome)
+			{
+				AnoLancamento = musicaRequest.anoLancamento,
+				ArtistaId = musicaRequest.ArtistaId,
+				Generos = musicaRequest.generos is not null ? GeneroRequestConverter(musicaRequest.generos,dalGenero) : new List<Genero>()
+
+
+			};
 			dal.Adicionar(musica);
 			return Results.Ok();
 		});
@@ -50,14 +57,30 @@ public static class MusicasExtensions
 				return Results.NotFound();
 			}
 			musicaAtualizar.Nome = musicaRequest.nome;
-			//musicaAtualizar.Artista = musicaRequest.ArtistaId;
+			musicaAtualizar.ArtistaId = musicaRequest.ArtistaId;
 			musicaAtualizar.AnoLancamento = musicaRequest.anoLancamento;
 
 			dal.Atualizar(musicaAtualizar);
 			return Results.Ok();
 		});
 	}
-	private static ICollection<MusicaResponse> EntityListToResponseList(IEnumerable<Musica> musicaList)
+
+    private static ICollection<Genero> GeneroRequestConverter(ICollection<GeneroRequest> generos,DAL<Genero>dalGenero)
+    {
+        return generos.Select(g => RequestToEntity(g)).ToList();
+    }
+
+    private static Genero RequestToEntity(GeneroRequest genero)
+    {
+		return new Genero()
+		{
+			Nome = genero.nome,
+			Descricao = genero.descricao,
+
+		};
+    }
+
+    private static ICollection<MusicaResponse> EntityListToResponseList(IEnumerable<Musica> musicaList)
 	{
 		return musicaList.Select(a => EntityToResponse(a)).ToList();
 	}
