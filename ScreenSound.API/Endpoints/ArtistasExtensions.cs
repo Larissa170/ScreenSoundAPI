@@ -13,7 +13,7 @@ public static class ArtistasExtensions
 		
 		app.MapGet("/Artistas", ([FromServices] DAL<Artista> dal) =>
 		{
-			return Results.Ok(dal.Listar());
+			return EntityListToResponseList(dal.Listar());
 		});
 
 		//buscar artistas por nome
@@ -24,7 +24,7 @@ public static class ArtistasExtensions
 			{
 				return Results.NotFound();
 			}
-			return Results.Ok(artista);
+			return EntityToResponse(artista);
 		});
 
 		app.MapPost("/Artistas", ([FromServices] DAL<Artista> dal, [FromBody] ArtistaRequest artistaRequest) =>

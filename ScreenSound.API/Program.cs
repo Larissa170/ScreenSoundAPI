@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ScreenSoundContext>();
 builder.Services.AddTransient<DAL<Artista>>(); // para nao repetir var dal = new DAL<Artista>(new ScreenSoundContext());
 builder.Services.AddTransient<DAL<Musica>>();
+builder.Services.AddTransient<DAL<Genero>>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); // serviço do swagger para criar documentação
@@ -18,6 +19,8 @@ var app = builder.Build();
 
 app.AddEndPointsArtistas();
 app.AddEndPointsMusicas();
+app.AddEndpointsGeneros();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
