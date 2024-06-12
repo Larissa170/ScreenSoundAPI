@@ -29,7 +29,7 @@ public static class GenerosExtensios
             {
                 return Results.NotFound();
             }
-            return EntityToResponse(genero);
+            return Results.Ok(EntityToResponse(genero));
         });
 
         app.MapDelete("/Generos/{id}", ([FromServices] DAL<Genero> dal, int id) =>

@@ -22,7 +22,7 @@ public static class MusicasExtensions
 			{
 				return Results.NotFound();
 			}
-			return EntityToResponse(musica);
+            return Results.Ok(EntityToResponse(musica));
 		});
 
 		app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromServices] DAL<Genero> dalGenero,[FromBody] MusicaRequest musicaRequest) => {

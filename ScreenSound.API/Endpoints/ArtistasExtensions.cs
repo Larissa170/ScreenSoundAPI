@@ -24,7 +24,7 @@ public static class ArtistasExtensions
 			{
 				return Results.NotFound();
 			}
-			return EntityToResponse(artista);
+			return Results.Ok(EntityToResponse(artista));
 		});
 
 		app.MapPost("/Artistas", ([FromServices] DAL<Artista> dal, [FromBody] ArtistaRequest artistaRequest) =>
@@ -67,7 +67,7 @@ public static class ArtistasExtensions
 
 	private static ArtistaResponse EntityToResponse(Artista artista)
 	{
-		return new ArtistaResponse(artista.Id, artista.Nome, artista.Bio, artista.FotoPerfil);
+		return new ArtistaResponse(artista.Id, artista.Nome, artista.FotoPerfil, artista.Bio);
 	}
 
 }
